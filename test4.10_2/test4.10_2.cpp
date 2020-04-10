@@ -2,10 +2,40 @@
 //
 
 #include <iostream>
+#include<opencv.hpp>
+
+using namespace cv;
+using namespace std;
 
 int main()
 {
-    std::cout << "Hello World!\n";
+	Mat srcMat = imread("E:\\Picture\\metal-part-distorted-03.png");
+	Mat grayMat;
+	Mat canny;
+	cvtColor(srcMat, grayMat, COLOR_BGR2GRAY);
+	Canny(srcMat, canny, 50, 200);
+	//2
+	vector<Vec2f> lines;
+	HoughLines(canny, lines, 1, CV_PI / 180, 100);
+	vector<Vec2f>::iterator it = lines.begin();
+	for (; it != lines.end(); ++it)
+	{
+		float rho = (*it)[0], theta = (*it)[1];
+		Point pt1, pt2;
+		double a = cos(theta);
+		double b = sin(theta);
+		double x0 = a * rho;
+		double y0 = b * rho;
+		pt1.x = saturate_cast<int>(x0 + 1000 * (-b));
+		pt1.y = saturate_cast<int>(y0 + 1000 * a);
+		pt2.x = saturate_cast<int>(x0 - 1000 * (-b));
+		pt2.y = saturate_cast<int>(y0 - 1000 * a);
+		line(srcMat, pt1, pt2, Scalar(0, 0, 255), 1, CV_AA);
+	}
+
+	imshow("原图", srcMat);
+	imshow("边缘检测", canny);
+	waitKey();
 }
 
 // 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
