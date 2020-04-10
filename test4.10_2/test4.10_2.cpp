@@ -14,13 +14,11 @@ int main()
 	Mat canny;
 	cvtColor(srcMat, grayMat, COLOR_BGR2GRAY);
 	Canny(srcMat, canny, 50, 200);
-	//2
-	vector<Vec2f> lines;
-	HoughLines(canny, lines, 1, CV_PI / 180, 100);
-	vector<Vec2f>::iterator it = lines.begin();
-	for (; it != lines.end(); ++it)
+	Mat lineMat;
+	HoughLines(canny, lineMat, 1, CV_PI / 180, 100);
+	for (int i = 0; i < lineMat.rows; i++)
 	{
-		float rho = (*it)[0], theta = (*it)[1];
+		float rho = lineMat.at<Vec2f>(i)[0], theta = lineMat.at<Vec2f>(i)[1];
 		Point pt1, pt2;
 		double a = cos(theta);
 		double b = sin(theta);
